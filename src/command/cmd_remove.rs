@@ -64,7 +64,20 @@ impl RemoveCommand {
 		app.arg(title).arg(index).arg(lvl).arg(tag)
 	}
 
-	pub fn from_matches(m: &ArgMatches) -> Self {}
+	pub fn from_matches(m: &ArgMatches) -> Self {
+		let title= m.value_of("title").map(String::from);
+		let lvl= m.value_of("lvl").map(|s| MinMax::parse(s).expect("internal error: MinMax::parse returned none"));
+		let index= m.value_of("index").map(|s| Index::parse(s).expect("internal error: Index::parse returned none"));
+		let tags = m
+			.value_of("tag")
+			.map(|s| s.split(',').map(String::from).collect::<Vec<_>>());
+			Self{
+				index,
+				lvl,
+				title,
+				tags,
+			}
+	}
 	
 	pub fn run(&self) -> Result<(), Box<dyn Error>> {
 		let p= config:: todo_path_checked()?;

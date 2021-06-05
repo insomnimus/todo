@@ -57,11 +57,11 @@ impl NewCommand {
 	}
 
 	pub fn from_matches(m: &ArgMatches) -> Self {
-		let title = m.value_of("title").owned().unwrap();
-		let body = m.value_of("body").owned().unwrap();
+		let title = m.value_of("title").map(String::from).unwrap();
+		let body = m.value_of("body").map(String::from).unwrap();
 		let tags = m
 			.value_of("tag")
-			.map(|s| s.split(',').owned().collect::<Vec<_>>());
+			.map(|s| s.split(',').map(String::from).collect::<Vec<_>>());
 		let lvl = m.value_of("lvl").map(|s| s.parse::<u8>().unwrap());
 
 		Self {

@@ -45,7 +45,7 @@ pub fn print_notes(notes: &[Note]) {
 	}
 }
 
-pub fn print_notes_enumerated(notes: &[(usize, Note)]) {
+pub fn print_notes_enumerated(notes: &[&(usize, Note)]) {
 	let max_title= notes.iter().map(|(_, &n)| n.title.len()).max();
 	for (&i, &n) in notes {
 		println!("#{index:2}  {title:width$}  |  {body}",

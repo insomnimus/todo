@@ -1,9 +1,10 @@
 use index::{Index, MinMax};
+use query::Filter;
 use crate::note::{self, Note};
 use super::*;
 
 use clap::{App, Arg, ArgMatches};
-use glob::{Pattern, MatchOptions};
+use glob::Pattern;
 
 use std::error::Error;
 
@@ -97,37 +98,34 @@ impl ListCommand {
 		}
 	}
 	
-	pub fn run(&self) -> Result<(), Box<dyn Error>> {
+	pub fn run(self) -> Result<(), Box<dyn Error>> {
+		let Self{
+			mut index, title, lvl, tags,
+		} = self;
+		let title= match title{
+			Some(t)=> Some(Pattern::new(&t)?),
+			_=> None,
+		};
+		let filter= Filter{
+			title,
+			lvl,
+			tags,
+		};
 		let p= config:: todo_path_checked()?;
+		
 		let notes: Vec<(usize, Note)>= note::get_notes(&p)?.into_iter().enumerate().collect();
-		let mut filtered= self.index.slice(&notes).unwrap_or_default().into_iter();
-		if let Some(lvl) = self.lvl {
-			filtered= filtered.filter(|(_, n)| lvl.in_range(n.lvl.unwrap_or_default()));
-		}
-		if self.index.is_reversed() {
-			filtered= filtered.rev();
-		}
-		if let Some(t) = self.title{
-			const OPT: MatchOptions= MatchOptions{
-				case_sensitive: false,
-				require_literal_separator: false,
-				require_literal_leading_dot: false,
-			};
-			let pattern= Pattern::new(&t)?;
-			filtered= filtered.filter(|(_, n)| pattern.matches_with(&n.title, OPT));
-		}
-	
-	if let Some(tags) = self.tags {
-		filtered= filtered.filter(|(_, n)| {
-			if let Some(note_tags)= n.tags{
-				note_tags.iter().any(|&tag| tags.iter().any(|&s| s==tag))
-			}else{
-				false
-			}
-		});
+		index.calibrate(notes.len());
+		let mut filtered: Vec<_>= index.slice(&notes)
+		.unwrap_or_default()
+		.into_iter()
+		.filter(|(_, n)| filter.is_match(n))
+		.collect();
+		
+	if index.is_reversed() {
+		filtered= filtered.into_iter().rev().collect();
 	}
 	
-	note::print_notes_enumerated(filtered);
+	note::print_notes_enumerated(&filtered[..]);
 	Ok(())
 	}
 }

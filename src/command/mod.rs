@@ -2,6 +2,7 @@ mod cmd_list;
 mod cmd_new;
 mod cmd_remove;
 mod index;
+mod query;
 
 use std::error::Error;
 
