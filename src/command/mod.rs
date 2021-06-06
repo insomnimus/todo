@@ -98,7 +98,7 @@ impl Command {
 			.subcommand(where_command)
 	}
 
-	pub fn run() {
+	pub fn run() -> Result<(), Box<dyn Error>> {
 		let matches = Self::app().get_matches();
 		if let Some(cmd) = matches.subcommand_name() {
 			let m = matches
@@ -110,9 +110,9 @@ impl Command {
 				"where" => show_todo_path(),
 				"new" => NewCommand::from_matches(m).run(),
 				_ => panic!("internal error: unknown command {}", cmd),
-			};
+			}
 		} else {
-			ListCommand::default().run();
+			ListCommand::default().run()
 		}
 	}
 }

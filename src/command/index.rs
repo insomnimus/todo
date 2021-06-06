@@ -11,7 +11,7 @@ impl MinMax {
 	pub fn parse(s: &str) -> Option<Self> {
 		let vals: Vec<_> = s.split(':').collect();
 		match vals.len() {
-			1 => vals[0].parse::<u8>().map(|n| Self::Nth(n)).ok(),
+			1 => vals[0].parse::<u8>().map(Self::Nth).ok(),
 			2 => {
 				let (x, y) = (vals[0], vals[1]);
 				let left = if x.is_empty() {
@@ -58,7 +58,7 @@ impl Index {
 	pub fn parse(s: &str) -> Option<Self> {
 		let vals: Vec<_> = s.split(':').collect();
 		match vals.len() {
-			1 => vals[0].parse::<isize>().map(|n| Self::Nth(n)).ok(),
+			1 => vals[0].parse::<isize>().map(Self::Nth).ok(),
 			2 => {
 				let (x, y) = (vals[0], vals[1]);
 				let left = if x.is_empty() {

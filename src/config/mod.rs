@@ -20,8 +20,6 @@ pub fn todo_path_checked() -> Result<PathBuf, Box<dyn Error>> {
 	let p = todo_path()?;
 	if !p.is_file() {
 		File::create(&p)?;
-		Ok(p)
-	} else {
-		Ok(p)
 	}
+	Ok(p)
 }

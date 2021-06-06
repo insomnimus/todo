@@ -119,7 +119,7 @@ impl ListCommand {
 		let mut filtered: Vec<_> = index
 			.slice(&notes)
 			.unwrap_or_default()
-			.into_iter()
+			.iter()
 			.filter(|(_, n)| filter.is_match(n))
 			.collect();
 
