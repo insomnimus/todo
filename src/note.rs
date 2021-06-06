@@ -64,7 +64,7 @@ pub fn print_notes(notes: &[Note]) {
         return;
     }
     let max_title = notes.iter().map(|n| n.title.len()).max().unwrap_or(4);
-    for (i, n) in notes.iter().enumerate() {
+    for (i, n) in notes.iter().enumerate().rev() {
         println!(
             "#{index:2}  {title:width$}  |  {body}",
             index = i,
@@ -81,7 +81,7 @@ pub fn print_notes_enumerated(notes: &[&(usize, Note)]) {
         return;
     }
     let max_title = notes.iter().map(|(_, n)| n.title.len()).max().unwrap_or(4);
-    for (i, n) in notes {
+    for (i, n) in notes.iter().rev() {
         println!(
             "#{index:2}  {title:width$}  |  {body}",
             index = i,

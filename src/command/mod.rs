@@ -74,8 +74,8 @@ pub struct Command;
 impl Command {
     pub fn app() -> App<'static> {
         let where_command = App::new("where")
-            .visible_alias("wh")
-            .aliases(&["w", "which", "whereis"])
+            .visible_alias("w")
+            .aliases(&["wh", "which", "whereis"])
             .about("show the path of the todoes file");
 
         App::new("todo")

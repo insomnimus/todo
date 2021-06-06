@@ -41,4 +41,15 @@ impl Filter {
 
         true
     }
+
+    pub fn is_empty(&self) -> bool {
+        matches!(
+            self,
+            Self {
+                title: None,
+                lvl: None,
+                tags: None
+            }
+        )
+    }
 }

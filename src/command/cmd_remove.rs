@@ -19,8 +19,8 @@ pub struct RemoveCommand {
 impl RemoveCommand {
     pub fn app() -> App<'static> {
         let app = App::new("remove")
-            .visible_alias("rm")
-            .aliases(&["del", "delete"])
+            .visible_alias("r")
+            .aliases(&["del", "delete", "rm"])
             .about("remove notes")
             .setting(AppSettings::ArgRequiredElseHelp);
 
@@ -112,11 +112,11 @@ impl RemoveCommand {
                 if let Some(idx) = &index {
                     !idx.in_range(*i as isize)
                 } else {
-                    false
+                    true
                 }
             })
             .map(|(_, n)| n)
-            .filter(|n| !filter.is_match(&n))
+            .filter(|n| filter.is_empty() || !filter.is_match(&n))
             .collect();
 
         let remaining = notes.len();

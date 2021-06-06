@@ -31,8 +31,8 @@ impl ListCommand {
     pub fn app() -> App<'static> {
         let app = App::new("list")
             .about("display notes")
-            .visible_alias("ls")
-            .aliases(&["show", "display"]);
+            .visible_alias("l")
+            .aliases(&["show", "display", "ls"]);
 
         let index = Arg::new("index")
             .short('i')
