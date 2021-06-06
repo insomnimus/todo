@@ -1,3 +1,9 @@
+use todo::command::Command;
+//use std::process;
+
 fn main() {
-	println!("Hello, world!");
+    if let Err(e) = Command::run() {
+        panic!("error: {:?}", e);
+        //process::exit(1);
+    }
 }
