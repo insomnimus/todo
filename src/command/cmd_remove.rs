@@ -85,15 +85,18 @@ impl RemoveCommand {
 	}
 
 	pub fn run(self) -> Result<(), Box<dyn Error>> {
-		let Self{index, lvl, title, tags} = self;
-		
+		let Self {
+			index,
+			lvl,
+			title,
+			tags,
+		} = self;
+
 		let title = match title {
 			Some(t) => Some(Pattern::new(&t)?),
 			_ => None,
 		};
-		let filter= Filter{
-			title, lvl, tags,
-		};
+		let filter = Filter { title, lvl, tags };
 		let p = config::todo_path_checked()?;
 		let notes = note::get_notes(&p)?;
 		let total = notes.len();
@@ -102,20 +105,20 @@ impl RemoveCommand {
 			return Ok(());
 		}
 		let index = index.map(|idx| idx.calibrated(total));
-	let notes: Vec<_>= notes
-	.into_iter()
-	.enumerate()
-	.filter(|(i, _)| {
-		if let Some(idx) = &index{
-			!idx.in_range(*i as isize)
-		}else{
-			false
-		}
-	})
-	.map(|(_, n)| n)
-	.filter(|n| !filter.is_match(&n))
-	.collect();
-	
+		let notes: Vec<_> = notes
+			.into_iter()
+			.enumerate()
+			.filter(|(i, _)| {
+				if let Some(idx) = &index {
+					!idx.in_range(*i as isize)
+				} else {
+					false
+				}
+			})
+			.map(|(_, n)| n)
+			.filter(|n| !filter.is_match(&n))
+			.collect();
+
 		let remaining = notes.len();
 		if remaining == total {
 			println!("no match, nothing to do");

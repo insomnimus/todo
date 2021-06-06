@@ -2,8 +2,8 @@ use serde_derive::{Deserialize, Serialize};
 
 use std::error::Error;
 use std::fs::{self, File};
-use std::path::Path;
 use std::io::Write;
+use std::path::Path;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Note {

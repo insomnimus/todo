@@ -1,5 +1,5 @@
-use std::convert::TryFrom;
 use std::cmp;
+use std::convert::TryFrom;
 
 #[derive(Debug, PartialEq)]
 pub enum MinMax {
@@ -83,9 +83,9 @@ impl Index {
 	}
 
 	pub fn slice<'a, T>(&self, sl: &'a [T]) -> Option<&'a [T]> {
-		let len= isize::try_from(sl.len()).unwrap_or(isize::MAX);
+		let len = isize::try_from(sl.len()).unwrap_or(isize::MAX);
 		match self {
-			Self::Nth(n) if *n < len=> {
+			Self::Nth(n) if *n < len => {
 				let x = if *n < 0 { len - *n } else { *n };
 				if x < 0 {
 					None
@@ -167,12 +167,12 @@ impl Index {
 			_ => (),
 		};
 	}
-	
-	pub fn calibrated(mut self, len: usize) -> Self{
+
+	pub fn calibrated(mut self, len: usize) -> Self {
 		self.calibrate(len);
 		self
 	}
-	
+
 	pub fn is_reversed(&self) -> bool {
 		match self {
 			Self::Nth(_) => false,
