@@ -101,7 +101,9 @@ impl Command {
 	pub fn run() {
 		let matches = Self::app().get_matches();
 		if let Some(cmd) = matches.subcommand_name() {
-			let m = matches.subcommand_matches(cmd).expect("internal error: arg matches is empty");
+			let m = matches
+				.subcommand_matches(cmd)
+				.expect("internal error: arg matches is empty");
 			match cmd {
 				"list" => ListCommand::from_matches(m).run(),
 				"remove" => RemoveCommand::from_matches(m).run(),

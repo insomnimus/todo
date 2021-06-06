@@ -38,17 +38,27 @@ pub fn get_notes(p: impl AsRef<Path>) -> Result<Vec<Note>, Box<dyn Error>> {
 }
 
 pub fn print_notes(notes: &[Note]) {
-	let max_title= notes.iter().map(|&n| n.title.len()).max();
+	let max_title = notes.iter().map(|&n| n.title.len()).max();
 	for (&i, &n) in notes.iter().enumerate() {
-		println!("#{index:2}  {title:width$}  |  {body}",
-		index= i, width=max_title, title= n.title, body=n.body);
+		println!(
+			"#{index:2}  {title:width$}  |  {body}",
+			index = i,
+			width = max_title,
+			title = n.title,
+			body = n.body
+		);
 	}
 }
 
 pub fn print_notes_enumerated(notes: &[&(usize, Note)]) {
-	let max_title= notes.iter().map(|(_, &n)| n.title.len()).max();
+	let max_title = notes.iter().map(|(_, &n)| n.title.len()).max();
 	for (&i, &n) in notes {
-		println!("#{index:2}  {title:width$}  |  {body}",
-		index= i, width=max_title, title= n.title, body=n.body);
+		println!(
+			"#{index:2}  {title:width$}  |  {body}",
+			index = i,
+			width = max_title,
+			title = n.title,
+			body = n.body
+		);
 	}
 }

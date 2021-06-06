@@ -1,7 +1,7 @@
+use super::*;
+use crate::note::{self, Note};
 use index::{Index, MinMax};
 use query::Filter;
-use crate::note::{self, Note};
-use super::*;
 
 use clap::{App, Arg, ArgMatches};
 use glob::Pattern;
@@ -84,8 +84,10 @@ impl ListCommand {
 			.value_of("index")
 			.map(|s| Index::parse(s).expect("internal error: Index::parse returned None"))
 			.unwrap_or_default();
-			
-		let tags = m.value_of("tag").map(|s| s.split(',').map(String::from).collect());
+
+		let tags = m
+			.value_of("tag")
+			.map(|s| s.split(',').map(String::from).collect());
 		let lvl = m
 			.value_of("lvl")
 			.map(|s| MinMax::parse(s).expect("internal error: MinMax::parse returned None"));
@@ -97,35 +99,35 @@ impl ListCommand {
 			tags,
 		}
 	}
-	
+
 	pub fn run(self) -> Result<(), Box<dyn Error>> {
-		let Self{
-			mut index, title, lvl, tags,
-		} = self;
-		let title= match title{
-			Some(t)=> Some(Pattern::new(&t)?),
-			_=> None,
-		};
-		let filter= Filter{
+		let Self {
+			mut index,
 			title,
 			lvl,
 			tags,
+		} = self;
+		let title = match title {
+			Some(t) => Some(Pattern::new(&t)?),
+			_ => None,
 		};
-		let p= config:: todo_path_checked()?;
-		
-		let notes: Vec<(usize, Note)>= note::get_notes(&p)?.into_iter().enumerate().collect();
+		let filter = Filter { title, lvl, tags };
+		let p = config::todo_path_checked()?;
+
+		let notes: Vec<(usize, Note)> = note::get_notes(&p)?.into_iter().enumerate().collect();
 		index.calibrate(notes.len());
-		let mut filtered: Vec<_>= index.slice(&notes)
-		.unwrap_or_default()
-		.into_iter()
-		.filter(|(_, n)| filter.is_match(n))
-		.collect();
-		
-	if index.is_reversed() {
-		filtered= filtered.into_iter().rev().collect();
-	}
-	
-	note::print_notes_enumerated(&filtered[..]);
-	Ok(())
+		let mut filtered: Vec<_> = index
+			.slice(&notes)
+			.unwrap_or_default()
+			.into_iter()
+			.filter(|(_, n)| filter.is_match(n))
+			.collect();
+
+		if index.is_reversed() {
+			filtered = filtered.into_iter().rev().collect();
+		}
+
+		note::print_notes_enumerated(&filtered[..]);
+		Ok(())
 	}
 }

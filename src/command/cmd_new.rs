@@ -1,4 +1,7 @@
-use crate::{config, note::{self, Note}};
+use crate::{
+	config,
+	note::{self, Note},
+};
 
 use clap::{App, Arg, ArgMatches};
 
@@ -62,6 +65,7 @@ impl NewCommand {
 		let tags = m
 			.value_of("tag")
 			.map(|s| s.split(',').map(String::from).collect::<Vec<_>>());
+
 		let lvl = m.value_of("lvl").map(|s| s.parse::<u8>().unwrap());
 
 		Self {
@@ -71,12 +75,12 @@ impl NewCommand {
 			tags,
 		}
 	}
-	
+
 	pub fn run(self) -> Result<(), Box<dyn Error>> {
-		let p= config::todo_path_checked()?;
-		let mut notes= note::get_notes(&p)?;
-		let title= &self.title;
-		let n= Note{
+		let p = config::todo_path_checked()?;
+		let mut notes = note::get_notes(&p)?;
+		let title = &self.title;
+		let n = Note {
 			title: self.title,
 			body: self.body,
 			lvl: self.lvl,

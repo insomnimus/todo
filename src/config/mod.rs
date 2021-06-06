@@ -1,7 +1,7 @@
 use std::env;
-use std::path::PathBuf;
-use std::fs::File;
 use std::error::Error;
+use std::fs::File;
+use std::path::PathBuf;
 
 pub fn todo_path() -> Result<PathBuf, &'static str> {
 	if let Ok(s) = env::var("TODO_PATH") {
@@ -15,11 +15,11 @@ pub fn todo_path() -> Result<PathBuf, &'static str> {
 }
 
 pub fn todo_path_checked() -> Result<PathBuf, Box<dyn Error>> {
-	let p= todo_path()?;
+	let p = todo_path()?;
 	if !p.is_file() {
 		File::create(&p)?;
 		Ok(p)
-	}else{
+	} else {
 		Ok(p)
 	}
 }
