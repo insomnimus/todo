@@ -1,3 +1,4 @@
+use std::convert::TryFrom;
 use std::cmp;
 
 #[derive(Debug, PartialEq)]
@@ -27,7 +28,7 @@ impl MinMax {
 				} else {
 					return None;
 				};
-				Some(Self::Between(left, right))
+				Some(Self::Between((left, right)))
 			}
 			_ => None,
 		}
@@ -35,8 +36,8 @@ impl MinMax {
 
 	pub fn in_range(&self, n: u8) -> bool {
 		match self {
-			Self::Nth(x) => x == n,
-			Self::Between((min, max)) => n >= min && n <= max,
+			Self::Nth(x) => *x == n,
+			Self::Between((min, max)) => n >= *min && n <= *max,
 		}
 	}
 }
@@ -49,7 +50,7 @@ pub enum Index {
 
 impl Default for Index {
 	fn default() -> Self {
-		Self::Between(0, isize::MAX)
+		Self::Between((0, isize::MAX))
 	}
 }
 
@@ -75,16 +76,17 @@ impl Index {
 					return None;
 				};
 
-				Some(Self::Between(left, right))
+				Some(Self::Between((left, right)))
 			}
 			_ => None,
 		}
 	}
 
 	pub fn slice<'a, T>(&self, sl: &'a [T]) -> Option<&'a [T]> {
+		let len= isize::try_from(sl.len()).unwrap_or(isize::MAX);
 		match self {
-			Self::Nth(&n) if n < sl.len() => {
-				let x = if n < 0 { sl.len() - n } else { n };
+			Self::Nth(n) if *n < len=> {
+				let x = if *n < 0 { len - *n } else { *n };
 				if x < 0 {
 					None
 				} else {
@@ -94,7 +96,6 @@ impl Index {
 			}
 			Self::Nth(_) => None,
 			Self::Between((start, end)) => {
-				let len = isize::try_from(sl.len()).unwrap();
 				let start = if *start < 0 { len + *start } else { *start };
 				let end = if *end < 0 { *end + len } else { *end };
 
@@ -120,9 +121,9 @@ impl Index {
 
 	pub fn in_range(&self, n: isize) -> bool {
 		match self {
-			Self::Nth(&x) => x == n,
-			Self::Between((&x, &y)) => {
-				let (min, max) = (cmp::min(x, y), cmp::max(x, y));
+			Self::Nth(x) => *x == n,
+			Self::Between((x, y)) => {
+				let (min, max) = (cmp::min(*x, *y), cmp::max(*x, *y));
 				min <= n && max > n
 			}
 		}
@@ -131,33 +132,33 @@ impl Index {
 	pub fn calibrate(&mut self, len: usize) {
 		let len = isize::try_from(len).unwrap_or(isize::MAX);
 		match self {
-			Self::Nth(n) if n < 0 => {
-				self = if n + len < 0 {
+			Self::Nth(n) if *n < 0 => {
+				*self = if *n + len < 0 {
 					Self::Nth(isize::MAX)
 				} else {
-					Self::Nth(n + len)
+					Self::Nth(*n + len)
 				};
 			}
 			Self::Between((left, right)) => {
-				let left = if left < 0 {
-					left + len
-				} else if left > len {
+				let left = if *left < 0 {
+					*left + len
+				} else if *left > len {
 					len
 				} else {
-					left
+					*left
 				};
 				if left < 0 {
-					self = Self::Nth(isize::MAX);
+					*self = Self::Nth(isize::MAX);
 					return;
 				}
-				let right = if right < 0 {
-					right + len
-				} else if right > len {
+				let right = if *right < 0 {
+					*right + len
+				} else if *right > len {
 					len
 				} else {
-					right
+					*right
 				};
-				self = if right < 0 {
+				*self = if right < 0 {
 					Self::Nth(isize::MAX)
 				} else {
 					Self::Between((left, right))
@@ -166,11 +167,16 @@ impl Index {
 			_ => (),
 		};
 	}
-
+	
+	pub fn calibrated(mut self, len: usize) -> Self{
+		self.calibrate(len);
+		self
+	}
+	
 	pub fn is_reversed(&self) -> bool {
 		match self {
 			Self::Nth(_) => false,
-			Self::Between((&left, &right)) => left < right,
+			Self::Between((left, right)) => *left < *right,
 		}
 	}
 }

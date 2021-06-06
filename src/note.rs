@@ -3,6 +3,7 @@ use serde_derive::{Deserialize, Serialize};
 use std::error::Error;
 use std::fs::{self, File};
 use std::path::Path;
+use std::io::Write;
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Note {
@@ -38,8 +39,8 @@ pub fn get_notes(p: impl AsRef<Path>) -> Result<Vec<Note>, Box<dyn Error>> {
 }
 
 pub fn print_notes(notes: &[Note]) {
-	let max_title = notes.iter().map(|&n| n.title.len()).max();
-	for (&i, &n) in notes.iter().enumerate() {
+	let max_title = notes.iter().map(|n| n.title.len()).max().unwrap_or(4);
+	for (i, n) in notes.iter().enumerate() {
 		println!(
 			"#{index:2}  {title:width$}  |  {body}",
 			index = i,
@@ -51,8 +52,8 @@ pub fn print_notes(notes: &[Note]) {
 }
 
 pub fn print_notes_enumerated(notes: &[&(usize, Note)]) {
-	let max_title = notes.iter().map(|(_, &n)| n.title.len()).max();
-	for (&i, &n) in notes {
+	let max_title = notes.iter().map(|(_, n)| n.title.len()).max().unwrap_or(4);
+	for (i, n) in notes {
 		println!(
 			"#{index:2}  {title:width$}  |  {body}",
 			index = i,

@@ -79,7 +79,7 @@ impl NewCommand {
 	pub fn run(self) -> Result<(), Box<dyn Error>> {
 		let p = config::todo_path_checked()?;
 		let mut notes = note::get_notes(&p)?;
-		let title = &self.title;
+		let title = self.title.clone();
 		let n = Note {
 			title: self.title,
 			body: self.body,

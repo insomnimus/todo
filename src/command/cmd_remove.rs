@@ -1,9 +1,10 @@
 use super::*;
-use crate::note::{self, Note};
+use crate::note;
 use index::{Index, MinMax};
+use query::Filter;
 
 use clap::{App, AppSettings, Arg, ArgMatches};
-use glob::{MatchOptions, Pattern};
+use glob::Pattern;
 
 use std::error::Error;
 
@@ -83,51 +84,44 @@ impl RemoveCommand {
 		}
 	}
 
-	pub fn run(&self) -> Result<(), Box<dyn Error>> {
+	pub fn run(self) -> Result<(), Box<dyn Error>> {
+		let Self{index, lvl, title, tags} = self;
+		
+		let title = match title {
+			Some(t) => Some(Pattern::new(&t)?),
+			_ => None,
+		};
+		let filter= Filter{
+			title, lvl, tags,
+		};
 		let p = config::todo_path_checked()?;
-		let mut notes = note::get_notes(&p)?;
+		let notes = note::get_notes(&p)?;
 		let total = notes.len();
 		if total == 0 {
 			println!("you have no todos yet");
 			return Ok(());
 		}
-
-		if let Some(&idx) = self.index {
-			idx.exclude(&mut notes);
+		let index = index.map(|idx| idx.calibrated(total));
+	let notes: Vec<_>= notes
+	.into_iter()
+	.enumerate()
+	.filter(|(i, _)| {
+		if let Some(idx) = &index{
+			!idx.in_range(*i as isize)
+		}else{
+			false
 		}
-		let mut filtered = notes.into_iter();
-
-		if let Some(&lvl) = self.lvl {
-			filtered = filtered.filter(|&n| !lvl.in_range(n.lvl.or_default()));
-		}
-
-		if let Some(t) = self.title {
-			const OPT: MatchOptions = MatchOptions {
-				case_sensitive: false,
-				require_literal_separator: false,
-				require_literal_leading_dot: false,
-			};
-			let pattern = Pattern::new(&t)?;
-			filtered = filtered.filter(|(_, n)| !pattern.matches_with(&n.title, OPT));
-		}
-
-		if let Some(tags) = self.tags {
-			filtered = filtered.filter(|(_, n)| !{
-				if let Some(note_tags) = n.tags {
-					note_tags.iter().any(|&tag| tags.iter().any(|&s| s == tag))
-				} else {
-					false
-				}
-			});
-		}
-
-		let notes: Vec<Note> = filtered.collect();
+	})
+	.map(|(_, n)| n)
+	.filter(|n| !filter.is_match(&n))
+	.collect();
+	
 		let remaining = notes.len();
 		if remaining == total {
 			println!("no match, nothing to do");
 			Ok(())
 		} else {
-			note::save_notes(&p, &notes).and_then(|_| {
+			note::save_notes(&p, &notes).map(|_| {
 				if remaining + 1 == total {
 					println!("deleted 1 note");
 				} else {
