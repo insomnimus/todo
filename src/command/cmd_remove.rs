@@ -1,9 +1,9 @@
-use super::*;
+use super::index::{Index, MinMax};
+use super::query::Filter;
+use crate::config;
 use crate::note::{self, Notes};
-use index::{Index, MinMax};
-use query::Filter;
 
-use clap::{App, AppSettings, Arg, ArgMatches};
+use clap::ArgMatches;
 use glob::Pattern;
 
 use std::error::Error;
@@ -17,54 +17,6 @@ pub struct RemoveCommand {
 }
 
 impl RemoveCommand {
-    pub fn app() -> App<'static> {
-        let app = App::new("remove")
-            .visible_alias("r")
-            .aliases(&["del", "delete", "rm"])
-            .about("remove notes")
-            .setting(AppSettings::ArgRequiredElseHelp);
-
-        let title = Arg::new("title")
-            .about("a glob pattern matching the note title")
-            .long_about("a glob pattern matching the note title. matching is case insensitive");
-
-        let index = Arg::new("index")
-            .short('i')
-            .long("index")
-            .about("index of the note to remove")
-            .long_about(
-                "index of the note to remove
-	syntax: START:END
-	or N
-	START or END can be omitted
-	negative numbers are allowed (will count from the end of the list)
-	the newest note will be index 0",
-            )
-            .takes_value(true)
-            .validator(validate_index);
-
-        let lvl = Arg::new("lvl")
-            .short('l')
-            .long("level")
-            .takes_value(true)
-            .about("remove notes matching the importance level")
-            .long_about(
-                "remove notes matching the importance level
-	syntax: MIN:MAX or LVL
-	MIN or MAX can be omitted",
-            )
-            .validator(validate_minmax);
-
-        let tag= Arg::new("tag")
-	.short('t')
-	.long("tag")
-	.takes_value(true)
-	.about("space separated list of tags to remove notes having any of them")
-	.about("space separated list of tags to remove notes having any of them. tags are case insensitive");
-
-        app.arg(title).arg(index).arg(lvl).arg(tag)
-    }
-
     pub fn from_matches(m: &ArgMatches) -> Self {
         let title = m.value_of("title").map(String::from);
         let lvl = m

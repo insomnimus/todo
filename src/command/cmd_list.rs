@@ -1,9 +1,9 @@
-use super::*;
+use super::index::{Index, MinMax};
+use super::query::Filter;
+use crate::config;
 use crate::note::{self, Note};
-use index::{Index, MinMax};
-use query::Filter;
 
-use clap::{App, Arg, ArgMatches};
+use clap::ArgMatches;
 use glob::Pattern;
 
 use std::error::Error;
@@ -28,56 +28,6 @@ impl Default for ListCommand {
 }
 
 impl ListCommand {
-    pub fn app() -> App<'static> {
-        let app = App::new("list")
-            .about("display notes")
-            .visible_alias("l")
-            .aliases(&["show", "display", "ls"]);
-
-        let index = Arg::new("index")
-            .short('i')
-            .long("index")
-            .about("expression to filter the result by index")
-            .long_about(
-                "an expression to filter the results by index
-	syntax: start:end
-	or: N
-	start or end can be omitted
-	last note has the index 0",
-            )
-            .validator(validate_index)
-            .takes_value(true);
-
-        let title = Arg::new("title")
-            .about("filter results by their title")
-            .long_about(
-                "filter results by their title
-	glob patterns are allowed and matching is case insensitive",
-            );
-
-        let lvl = Arg::new("lvl")
-            .short('l')
-            .long("level")
-            .about("filter results by their importance level")
-            .long_about(
-                "filter results by their importance level
-	syntax: MIN:MAX
-	or: LVL
-	MIN or MAX can be omitted",
-            )
-            .validator(validate_minmax)
-            .takes_value(true);
-
-        let tag= Arg::new("tag")
-	.short('t')
-	.long("tag")
-	.takes_value(true)
-	.about("comma separated list of tags to filter the results with")
-	.long_about("comma separated list of tags to filter the results with. tags are case insensitive");
-
-        app.arg(title).arg(index).arg(lvl).arg(tag)
-    }
-
     pub fn from_matches(m: &ArgMatches) -> Self {
         let title = m.value_of("title").map(String::from);
         let index = m

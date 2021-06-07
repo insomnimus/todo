@@ -1,1 +1,8 @@
 /target
+*.sh
+*.ps1
+*.bash
+*.zsh
+*.fish
+*.elv
+_*
