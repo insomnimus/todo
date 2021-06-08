@@ -141,7 +141,7 @@ impl Index {
             }
             Self::Between((left, right)) => {
                 let left = if *left < 0 {
-                    *left + len
+                    *left + len + 1
                 } else if *left > len {
                     len
                 } else {
@@ -152,7 +152,7 @@ impl Index {
                     return;
                 }
                 let right = if *right < 0 {
-                    *right + len
+                    *right + len + 1
                 } else if *right > len {
                     len
                 } else {
