@@ -1,4 +1,4 @@
-use clap::{crate_version, App, AppSettings, Arg, ArgGroup};
+use clap::{crate_version, App, AppSettings, Arg};
 
 fn validate_index(s: &str) -> Result<(), String> {
     let vals: Vec<_> = s.split(':').collect();
