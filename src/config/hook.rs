@@ -92,7 +92,7 @@ impl Hook {
         if let Some(true) = self.silent {
             cmd.output().map(|_| ())
         } else {
-            cmd.status().map(|_| ())
+            cmd.spawn().map(|_| ())
         }
     }
 }

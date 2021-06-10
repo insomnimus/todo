@@ -72,4 +72,48 @@ There are of course more things you can do, please run `todo --help` for the ful
 
 # Config File Syntax and Hooks
 
-A tutorial will be added to this readme soon.
+
+Hooks are configured in the todo's config file, which uses the TOML format.
+
+A hook has these fields:
+
+-	`cmd`: a command and its arguments as an array of strings.
+-	`working_dir`: the commands working directory as a string. Defaults to the calling processes pwd.
+-	`silent`: a boolean value indicating whether the command should be silent, defaults to `false`.
+-	`abort_on_error`: a boolean value indicating whether the other hooks should stop being executed if this hook returns a non-0 exit code. Defaults to `true`.
+
+The only required field is the `cmd`.
+
+### Hook Types
+
+Currently there are 4 types of hooks you can set:
+
+-	`pre_new`: run before the "new" command takes effect.
+-	`post_new`: run after the "new" command takes effect.
+-	`pre_remove`: run before the "remove" command takes effect.
+-	`post_remove`: run after the "remove" command  takes effect.
+
+### Some Example Hooks
+
+Hooks are defined in the `[hooks]` table in the todo config file.
+
+```toml
+# [...]
+
+[hooks]
+
+[[hooks.pre_new]]
+cmd = [
+	"echo", "creating new note!"
+]
+
+[[hooks.post_remove]]
+cmd = [
+	"bash", "run_git_backup.sh"
+]
+working_dir = "/home/insomnia/notes/"
+silent = true
+abort_on_error = false
+```
+
+To find out where the config file is kept, run `todo where --config`.
