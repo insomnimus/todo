@@ -2,16 +2,16 @@ mod app;
 mod cmd_list;
 mod cmd_new;
 mod cmd_remove;
+mod cmd_where;
 mod index;
 mod query;
 
 use std::error::Error;
 
-use crate::config;
-
 use cmd_list::ListCommand;
 use cmd_new::NewCommand;
 use cmd_remove::RemoveCommand;
+use cmd_where::WhereCommand;
 
 use clap::App;
 
@@ -31,7 +31,7 @@ impl Command {
             match cmd {
                 "list" => ListCommand::from_matches(m).run(),
                 "remove" => RemoveCommand::from_matches(m).run(),
-                "where" => show_todo_path(),
+                "where" => WhereCommand::from_matches(m).run(),
                 "new" => NewCommand::from_matches(m).run(),
                 _ => panic!("internal error: unknown command {}", cmd),
             }
@@ -39,10 +39,4 @@ impl Command {
             ListCommand::default().run()
         }
     }
-}
-
-fn show_todo_path() -> Result<(), Box<dyn Error>> {
-    config::todo_path_checked().map(|p| {
-        println!("{}", p.display());
-    })
 }

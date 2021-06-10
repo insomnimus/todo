@@ -1,4 +1,4 @@
-use clap::{crate_version, App, AppSettings, Arg};
+use clap::{crate_version, App, AppSettings, Arg, ArgGroup};
 
 fn validate_index(s: &str) -> Result<(), String> {
     let vals: Vec<_> = s.split(':').collect();
@@ -56,11 +56,6 @@ fn validate_minmax(s: &str) -> Result<(), String> {
 }
 
 pub fn app() -> App<'static> {
-    let app_where = App::new("where")
-        .visible_alias("w")
-        .aliases(&["wh", "which", "whereis"])
-        .about("show the path of the todoes file");
-
     App::new("todo")
         .about("simple note tracker")
         .global_setting(AppSettings::UnifiedHelpMessage)
@@ -71,7 +66,7 @@ pub fn app() -> App<'static> {
         .subcommand(app_list())
         .subcommand(app_new())
         .subcommand(app_remove())
-        .subcommand(app_where)
+        .subcommand(app_where())
 }
 
 pub fn app_list() -> App<'static> {
@@ -169,7 +164,7 @@ pub fn app_remove() -> App<'static> {
 	.long("tag")
 	.takes_value(true)
 	.about("space separated list of tags to remove notes having any of them")
-	.about("space separated list of tags to remove notes having any of them. tags are case insensitive");
+	.long_about("space separated list of tags to remove notes having any of them. tags are case insensitive");
 
     app.arg(title).arg(index).arg(lvl).arg(tag)
 }
@@ -215,4 +210,22 @@ pub fn app_new() -> App<'static> {
         });
 
     app.arg(title).arg(body).arg(tag).arg(lvl)
+}
+
+pub fn app_where() -> App<'static> {
+    App::new("where")
+        .about("display todo related paths")
+        .visible_alias("w")
+        .aliases(&["which", "wh"])
+        .arg(
+            Arg::new("config")
+                .about("display config file path")
+                .conflicts_with("todos")
+                .long("config"),
+        )
+        .arg(
+            Arg::new("todos")
+                .about("show todos file path")
+                .long("todos"),
+        )
 }

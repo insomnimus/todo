@@ -1,9 +1,11 @@
 use serde_derive::{Deserialize, Serialize};
 
-use std::error::Error;
-use std::fs::{self, File};
-use std::io::Write;
-use std::path::Path;
+use std::{
+    error::Error,
+    fs::{self, File},
+    io::Write,
+    path::Path,
+};
 
 #[derive(Debug, Deserialize, Serialize)]
 pub struct Note {
@@ -25,7 +27,7 @@ impl Note {
 }
 
 pub fn save_notes(p: impl AsRef<Path>, notes: &Notes) -> Result<(), Box<dyn Error>> {
-    let data = toml::to_string(notes)?;
+    let data = toml::to_string_pretty(notes)?;
     let mut f = File::create(p.as_ref())?;
     f.write_all(data.as_bytes())?;
     f.sync_all()?;
@@ -34,7 +36,6 @@ pub fn save_notes(p: impl AsRef<Path>, notes: &Notes) -> Result<(), Box<dyn Erro
 
 pub fn get_notes(p: impl AsRef<Path>) -> Result<Vec<Note>, Box<dyn Error>> {
     let data = fs::read_to_string(p.as_ref())?;
-    //println!("{}", &data);
     let notes: Notes = toml::from_str(&data)?;
     Ok(notes.todo.unwrap_or_default())
 }
@@ -50,7 +51,7 @@ impl Notes {
     }
 
     pub fn save_to(&self, p: impl AsRef<Path>) -> Result<(), Box<dyn Error>> {
-        let data = toml::to_string(self)?;
+        let data = toml::to_string_pretty(self)?;
         let mut f = File::create(p.as_ref())?;
         f.write_all(data.as_bytes())?;
         f.sync_all()?;

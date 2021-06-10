@@ -1,7 +1,9 @@
-use super::index::{Index, MinMax};
-use super::query::Filter;
-use crate::config;
-use crate::note::{self, Note};
+use super::{
+    index::{Index, MinMax},
+    query::Filter,
+};
+
+use crate::{config::Config, note};
 
 use clap::ArgMatches;
 use glob::Pattern;
@@ -62,9 +64,12 @@ impl ListCommand {
             _ => None,
         };
         let filter = Filter { title, lvl, tags };
-        let p = config::todo_path_checked()?;
 
-        let notes: Vec<(usize, Note)> = note::get_notes(&p)?.into_iter().enumerate().collect();
+        let c = Config::get()?;
+        let notes: Vec<_> = note::get_notes(&c.todos_file)?
+            .into_iter()
+            .enumerate()
+            .collect();
         index.calibrate(notes.len());
         let mut filtered: Vec<_> = index
             .slice(&notes)

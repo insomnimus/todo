@@ -1,5 +1,5 @@
 use crate::{
-    config,
+    config::Config,
     note::{self, Note, Notes},
 };
 
@@ -34,8 +34,16 @@ impl NewCommand {
     }
 
     pub fn run(self) -> Result<(), Box<dyn Error>> {
-        let p = config::todo_path_checked()?;
-        let mut notes = note::get_notes(&p)?;
+        let c = Config::get()?;
+        let mut notes = note::get_notes(&c.todos_file)?;
+
+        if let Err(e) = c.hooks.run_pre_new() {
+            match c.abort_on_hook_error {
+                Some(true) | None => return Err(Box::new(e)),
+                Some(false) => println!("pre-new hook error: {:?}", e),
+            };
+        }
+
         let title = self.title.clone();
         let n = Note {
             title: self.title,
@@ -45,9 +53,10 @@ impl NewCommand {
         };
         notes.insert(0, n);
         let notes = Notes::new(notes);
-        notes.save_to(&p)?;
-        //note::save_notes(&p, &notes)?;
+        notes.save_to(&c.todos_file)?;
         println!("saved {}", title);
+
+        c.hooks.run_post_new()?;
         Ok(())
     }
 }
