@@ -67,6 +67,13 @@ pub fn app() -> App<'static> {
         .subcommand(app_new())
         .subcommand(app_remove())
         .subcommand(app_where())
+        .after_long_help(
+            "\
+todo checks for these env variables:
+-	TODO_CONFIG_DIR: the path of the directory that contains the todo.toml file
+-	TODOS_FILE_PATH: the absolute path to the file that todos are saved to (filename must be included)
+",
+        )
 }
 
 pub fn app_list() -> App<'static> {
