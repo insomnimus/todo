@@ -5,9 +5,19 @@ use glob::{MatchOptions, Pattern};
 
 #[derive(Debug)]
 pub struct Filter {
-    pub title: Option<Pattern>,
+    pub titles: Option<Vec<Pattern>>,
     pub lvl: Option<MinMax>,
     pub tags: Option<Vec<String>>,
+}
+
+impl Default for Filter {
+    fn default() -> Self {
+        Self {
+            titles: None,
+            lvl: None,
+            tags: None,
+        }
+    }
 }
 
 impl Filter {
@@ -18,8 +28,8 @@ impl Filter {
             require_literal_leading_dot: false,
         };
 
-        if let Some(title) = &self.title {
-            if !title.matches_with(&n.title[..], OPT) {
+        if let Some(titles) = &self.titles {
+            if !titles.iter().any(|p| p.matches_with(&n.title[..], OPT)) {
                 return false;
             }
         }
@@ -46,7 +56,7 @@ impl Filter {
         matches!(
             self,
             Self {
-                title: None,
+                titles: None,
                 lvl: None,
                 tags: None
             }

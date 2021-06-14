@@ -168,11 +168,6 @@ impl Index {
         };
     }
 
-    pub fn calibrated(mut self, len: usize) -> Self {
-        self.calibrate(len);
-        self
-    }
-
     pub fn is_reversed(&self) -> bool {
         match self {
             Self::Nth(_) => false,

@@ -101,7 +101,8 @@ pub fn app_list() -> App<'static> {
         .long_about(
             "filter results by their title
 	glob patterns are allowed and matching is case insensitive",
-        );
+        )
+        .multiple(true);
 
     let lvl = Arg::new("lvl")
         .short('l')
@@ -137,7 +138,8 @@ pub fn app_remove() -> App<'static> {
 
     let title = Arg::new("title")
         .about("a glob pattern matching the note title")
-        .long_about("a glob pattern matching the note title. matching is case insensitive");
+        .long_about("a glob pattern matching the note title. matching is case insensitive")
+        .multiple(true);
 
     let index = Arg::new("index")
         .short('i')

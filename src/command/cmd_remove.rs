@@ -16,14 +16,20 @@ use std::error::Error;
 #[derive(Debug)]
 pub struct RemoveCommand {
     pub index: Option<Index>,
-    pub lvl: Option<MinMax>,
-    pub title: Option<String>,
-    pub tags: Option<Vec<String>>,
+    pub filter: Filter,
 }
 
 impl RemoveCommand {
     pub fn from_matches(m: &ArgMatches) -> Self {
-        let title = m.value_of("title").map(String::from);
+        let titles = m.values_of("title").map(|i| {
+            i.map(|s| {
+                Pattern::new(s).unwrap_or_else(|e| {
+                    panic!("invalid glob pattern {}: {:?}", s, e);
+                })
+            })
+            .collect::<Vec<_>>()
+        });
+
         let lvl = m
             .value_of("lvl")
             .map(|s| MinMax::parse(s).expect("internal error: MinMax::parse returned none"));
@@ -35,27 +41,11 @@ impl RemoveCommand {
             .map(|s| s.split(',').map(String::from).collect::<Vec<_>>());
         Self {
             index,
-            lvl,
-            title,
-            tags,
+            filter: Filter { titles, lvl, tags },
         }
     }
 
-    pub fn run(self) -> Result<(), Box<dyn Error>> {
-        let Self {
-            index,
-            lvl,
-            title,
-            tags,
-        } = self;
-
-        let title = match title {
-            Some(t) => Some(Pattern::new(&t)?),
-            _ => None,
-        };
-
-        let filter = Filter { title, lvl, tags };
-
+    pub fn run(&mut self) -> Result<(), Box<dyn Error>> {
         let c = Config::get()?;
 
         if let Err(e) = c.hooks.run_pre_remove() {
@@ -71,17 +61,18 @@ impl RemoveCommand {
             println!("you have no todos");
             return Ok(());
         }
-
-        let index = index.map(|idx| idx.calibrated(notes.len()));
+        if let Some(i) = self.index.as_mut() {
+            i.calibrate(notes.len());
+        }
 
         let (remaining, deleted): (Vec<_>, Vec<_>) =
             notes.into_iter().enumerate().partition(|(i, n)| {
-                let not_in_range = if let Some(idx) = &index {
+                let not_in_range = if let Some(idx) = &self.index {
                     !idx.in_range(*i as isize)
                 } else {
                     true
                 };
-                not_in_range && (filter.is_empty() || !filter.is_match(&n))
+                not_in_range && (self.filter.is_empty() || !self.filter.is_match(&n))
             });
 
         if deleted.is_empty() {
