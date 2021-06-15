@@ -29,7 +29,7 @@ fn config_dir() -> Result<PathBuf, &'static str> {
     if let Ok(s) = env::var("TODO_CONFIG_DIR") {
         Ok(s.into())
     } else if let Some(mut p) = dirs::config_dir() {
-        p.push("todo.toml");
+        p.push("todo");
         Ok(p)
     } else {
         Err("could not determine the todo config dir, consider setting the $TODO_CONFIG_DIR env variable")
