@@ -58,8 +58,10 @@ fn validate_minmax(s: &str) -> Result<(), String> {
 pub fn app() -> App<'static> {
     App::new("todo")
         .about("simple note tracker")
+        .author("Taylan Gökkaya <github.com/insomnimus>")
         .global_setting(AppSettings::UnifiedHelpMessage)
         .global_setting(AppSettings::VersionlessSubcommands)
+        .setting(AppSettings::InferSubcommands)
         .global_setting(AppSettings::AllowNegativeNumbers)
         .global_setting(AppSettings::DeriveDisplayOrder)
         .version(crate_version!())
@@ -77,10 +79,7 @@ todo checks for these env variables:
 }
 
 pub fn app_list() -> App<'static> {
-    let app = App::new("list")
-        .about("display notes")
-        .visible_alias("l")
-        .aliases(&["show", "display", "ls"]);
+    let app = App::new("list").about("display notes");
 
     let index = Arg::new("index")
         .short('i')
@@ -129,8 +128,7 @@ pub fn app_list() -> App<'static> {
 
 pub fn app_remove() -> App<'static> {
     let app = App::new("remove")
-        .visible_alias("r")
-        .aliases(&["del", "delete", "rm"])
+        .visible_alias("delete")
         .about("remove notes")
         .setting(AppSettings::ArgRequiredElseHelp);
 
@@ -177,10 +175,7 @@ pub fn app_remove() -> App<'static> {
 }
 
 pub fn app_new() -> App<'static> {
-    let app = App::new("new")
-        .about("take a note")
-        .visible_alias("n")
-        .aliases(&["create", "add"]);
+    let app = App::new("new").about("take a note").visible_alias("add");
 
     let title = Arg::new("title")
         .about("note title")
@@ -223,8 +218,6 @@ pub fn app_new() -> App<'static> {
 pub fn app_where() -> App<'static> {
     App::new("where")
         .about("display todo related paths")
-        .visible_alias("w")
-        .aliases(&["which", "wh"])
         .arg(
             Arg::new("config")
                 .about("display config file path")
