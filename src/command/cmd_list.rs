@@ -41,9 +41,7 @@ impl ListCommand {
             .map(|s| Index::parse(s).expect("internal error: Index::parse returned None"))
             .unwrap_or_default();
 
-        let tags = m
-            .value_of("tag")
-            .map(|s| s.split(',').map(String::from).collect());
+        let tags = m.values_of("tag").map(|i| i.map(String::from).collect());
         let lvl = m
             .value_of("lvl")
             .map(|s| MinMax::parse(s).expect("internal error: MinMax::parse returned None"));

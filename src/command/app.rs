@@ -1,4 +1,4 @@
-use clap::{crate_version, App, AppSettings, Arg};
+use clap::{crate_version, App, AppSettings, Arg, ArgSettings};
 
 fn validate_index(s: &str) -> Result<(), String> {
     let vals: Vec<_> = s.split(':').collect();
@@ -122,9 +122,7 @@ pub fn app_list() -> App<'static> {
         .long("tag")
         .takes_value(true)
         .about("comma separated list of tags to filter the results with")
-        .long_about(
-            "comma separated list of tags to filter the results with. tags are case insensitive",
-        );
+        .setting(ArgSettings::UseValueDelimiter);
 
     app.arg(title).arg(index).arg(lvl).arg(tag)
 }
@@ -168,12 +166,12 @@ pub fn app_remove() -> App<'static> {
         )
         .validator(validate_minmax);
 
-    let tag= Arg::new("tag")
-	.short('t')
-	.long("tag")
-	.takes_value(true)
-	.about("space separated list of tags to remove notes having any of them")
-	.long_about("space separated list of tags to remove notes having any of them. tags are case insensitive");
+    let tag = Arg::new("tag")
+        .short('t')
+        .long("tag")
+        .takes_value(true)
+        .about("comma separated list of tags to remove matching notes by")
+        .setting(ArgSettings::UseValueDelimiter);
 
     app.arg(title).arg(index).arg(lvl).arg(tag)
 }
@@ -199,7 +197,8 @@ pub fn app_new() -> App<'static> {
         .short('t')
         .long("tag")
         .takes_value(true)
-        .long_about("comma separated list of tags. can be used to filter notes");
+        .long_about("comma separated list of tags. can be used to filter notes")
+        .setting(ArgSettings::UseValueDelimiter);
 
     let lvl = Arg::new("lvl")
         .short('l')

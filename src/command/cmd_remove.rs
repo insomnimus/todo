@@ -37,8 +37,8 @@ impl RemoveCommand {
             .value_of("index")
             .map(|s| Index::parse(s).expect("internal error: Index::parse returned none"));
         let tags = m
-            .value_of("tag")
-            .map(|s| s.split(',').map(String::from).collect::<Vec<_>>());
+            .values_of("tag")
+            .map(|i| i.map(String::from).collect::<Vec<_>>());
         Self {
             index,
             filter: Filter { titles, lvl, tags },
@@ -72,7 +72,7 @@ impl RemoveCommand {
                 } else {
                     true
                 };
-                not_in_range && (self.filter.is_empty() || !self.filter.is_match(&n))
+                not_in_range && (self.filter.is_empty() || !self.filter.is_match(n))
             });
 
         if deleted.is_empty() {
