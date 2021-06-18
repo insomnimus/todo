@@ -61,7 +61,6 @@ pub fn app() -> App<'static> {
         .author("Taylan Gökkaya <github.com/insomnimus>")
         .global_setting(AppSettings::UnifiedHelpMessage)
         .global_setting(AppSettings::VersionlessSubcommands)
-        .setting(AppSettings::InferSubcommands)
         .global_setting(AppSettings::AllowNegativeNumbers)
         .global_setting(AppSettings::DeriveDisplayOrder)
         .version(crate_version!())
@@ -79,7 +78,9 @@ todo checks for these env variables:
 }
 
 pub fn app_list() -> App<'static> {
-    let app = App::new("list").about("display notes");
+    let app = App::new("list")
+        .about("display notes")
+        .visible_aliases(&["l", "ls"]);
 
     let index = Arg::new("index")
         .short('i')
@@ -128,7 +129,8 @@ pub fn app_list() -> App<'static> {
 
 pub fn app_remove() -> App<'static> {
     let app = App::new("remove")
-        .visible_alias("delete")
+        .visible_aliases(&["r", "rm"])
+        .aliases(&["delete", "del"])
         .about("remove notes")
         .setting(AppSettings::ArgRequiredElseHelp);
 
@@ -175,7 +177,10 @@ pub fn app_remove() -> App<'static> {
 }
 
 pub fn app_new() -> App<'static> {
-    let app = App::new("new").about("take a note").visible_alias("add");
+    let app = App::new("new")
+        .about("take a note")
+        .visible_alias("n")
+        .alias("add");
 
     let title = Arg::new("title")
         .about("note title")
@@ -217,6 +222,8 @@ pub fn app_new() -> App<'static> {
 
 pub fn app_where() -> App<'static> {
     App::new("where")
+        .visible_alias("w")
+        .alias("which")
         .about("display todo related paths")
         .arg(
             Arg::new("config")
