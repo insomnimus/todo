@@ -1,6 +1,7 @@
 mod app;
 mod cmd_list;
 mod cmd_new;
+mod cmd_random;
 mod cmd_remove;
 mod cmd_where;
 mod index;
@@ -10,6 +11,7 @@ use std::error::Error;
 
 use cmd_list::ListCommand;
 use cmd_new::NewCommand;
+use cmd_random::RandomCommand;
 use cmd_remove::RemoveCommand;
 use cmd_where::WhereCommand;
 
@@ -33,6 +35,7 @@ impl Command {
                 "remove" => RemoveCommand::from_matches(m).run(),
                 "where" => WhereCommand::from_matches(m).run(),
                 "new" => NewCommand::from_matches(m).run(),
+                "random" => RandomCommand::from_matches(m).run(),
                 _ => panic!("internal error: unknown command {}", cmd),
             }
         } else {

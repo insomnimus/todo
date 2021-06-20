@@ -68,6 +68,7 @@ pub fn app() -> App<'static> {
         .subcommand(app_new())
         .subcommand(app_remove())
         .subcommand(app_where())
+        .subcommand(app_random())
         .after_long_help(
             "\
 todo checks for these env variables:
@@ -236,4 +237,30 @@ pub fn app_where() -> App<'static> {
                 .about("show todos file path")
                 .long("todos"),
         )
+}
+
+pub fn app_random() -> App<'static> {
+    let app = App::new("random")
+        .about("display random todos")
+        .visible_alias("rand");
+
+    let n = Arg::new("n")
+        .about("the amount of todos to show")
+        .default_value("1")
+        .validator(|s| match s.parse::<usize>() {
+            Err(_) | Ok(0) => Err(format!(
+                "{}: the value must be an integer greater than 0",
+                s
+            )),
+            Ok(_) => Ok(()),
+        });
+
+    let tags = Arg::new("tag")
+        .short('t')
+        .long("tag")
+        .about("comma separated list of tags to narrow the results with")
+        .takes_value(true)
+        .setting(ArgSettings::UseValueDelimiter);
+
+    app.arg(n).arg(tags)
 }
