@@ -66,6 +66,10 @@ todo remove "mail *"
 todo remove -i 5:10
 # view todos in reverse order
 todo list -i=-1:0
+# display 3 random todos
+todo random 3
+# display 2 random todos that also have the "project" tag
+todo random 2 --tag project
 ```
 
 There are of course more things you can do, please run `todo --help` for the full usage.
