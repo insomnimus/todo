@@ -86,7 +86,7 @@ impl Index {
         let len = isize::try_from(sl.len()).unwrap_or(isize::MAX);
         match self {
             Self::Nth(n) if *n < len => {
-                let x = if *n < 0 { len - *n } else { *n };
+                let x = if *n < 0 { len + *n } else { *n };
                 if x < 0 {
                     None
                 } else {
