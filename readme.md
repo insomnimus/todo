@@ -34,14 +34,14 @@ Todo is not yet published on crates.io but it is planned, meanwhile you can foll
 git clone https://github.com/insomnimus/todo
 cd todo
 git checkout main
-cargo install --path .
+cargo install --path . --locked
 ```
 
 The shell completion files will be written to the project root after cargo installs todo on your system.
 
 ### Installation with cargo only (no shell completions)
 
-`cargo install --git https://github.com/insomnimus/todo --branch main`
+`cargo install --locked --git https://github.com/insomnimus/todo --branch main`
 
 # Usage
 
